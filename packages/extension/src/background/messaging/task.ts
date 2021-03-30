@@ -19,6 +19,8 @@ import { logging } from '@algosigner/common/logging';
 import { InvalidTransactionStructure } from '../../errors/validation';
 import { buildTransaction } from '../utils/transactionBuilder';
 import { getSigningAccounts } from '../utils/multisig';
+import { removeEmptyFields } from '@algosigner/common/utils';
+import { base64ToByteArray } from '@algosigner/common/encoding';
 
 const popupProperties = {
   type: 'popup',
@@ -409,6 +411,150 @@ export class Task {
                   );
                 }
               });
+            });
+          }
+        },
+        [JsonRpcMethod.SignV2Transaction]: (d: any, resolve: Function, reject: Function) => {
+          let transactionArray;
+          let transactionWraps = undefined;
+          let validationError = undefined;
+          try {
+            transactionArray = d.body.params.transactions;
+            console.log(transactionArray);
+            /**
+             * In order to process the msgpack and make it compatible with our validator, we:
+             * 0) Decode from base64 to Uint8Array msgpack
+             * 1) Use the 'decodeUnsignedTransaction' method of the SDK to parse the msgpack
+             * 2) Use the '_getDictForDisplay' to change the format of the fields that are different from ours
+             * 3) Remove empty fields to get rid of conversion issues like empty note byte arrays
+             */
+            transactionArray = transactionArray.map((tx) =>
+              removeEmptyFields(
+                algosdk.decodeUnsignedTransaction(base64ToByteArray(tx))._getDictForDisplay()
+              )
+            );
+            console.log(transactionArray);
+          } catch (e) {
+            logging.log(`Unable to parse transaction object. ${e}`);
+            d.error = e;
+            reject(d);
+          }
+          try {
+            if (!transactionArray.every((tx) => transactionArray[0].genesisID === tx.genesisID))
+              throw new Error('All transactions need to belong to the same ledger.');
+            transactionWraps = transactionArray.map((tx) =>
+              getValidatedTxnWrap(tx, tx['type'], false)
+            );
+          } catch (e) {
+            logging.log(`Validation failed. ${e}`);
+            validationError = e;
+          }
+          console.log(transactionWraps);
+          if (
+            !transactionWraps &&
+            !transactionWraps.length &&
+            validationError &&
+            validationError instanceof InvalidTransactionStructure
+          ) {
+            console.log('No wraps, but validation errors');
+            // We don't have a transaction wrap, but we have a validation error.
+            d.error = {
+              message: validationError.message,
+            };
+            reject(d);
+            return;
+          } else if (!transactionWraps && !transactionWraps.length) {
+            console.log('No wraps, no validation errors');
+            // We don't have a transaction wrap. We have an unknow error or extra fields, reject the transaction.
+            logging.log(
+              'A transaction has failed because of an inability to build the specified transaction type.'
+            );
+            d.error = {
+              message:
+                validationError ||
+                'Validation failed for transaction. Please verify the properties are valid.',
+            };
+            reject(d);
+          } else if (
+            transactionWraps.some(
+              (tx) =>
+                tx.validityObject &&
+                Object.values(tx.validityObject).some(
+                  (value) => value['status'] === ValidationStatus.Invalid
+                )
+            )
+          ) {
+            console.log('Invalid fields');
+            // We have a transaction that contains fields which are deemed invalid. We should reject the transaction.
+            // We can use a modified popup that allows users to review the transaction and invalid fields and close the transaction.
+            const invalidKeys = {};
+            transactionWraps.forEach((tx, index) => {
+              invalidKeys['index'] = [];
+              Object.entries(tx.validityObject).forEach(([key, value]) => {
+                if (value['status'] === ValidationStatus.Invalid) {
+                  invalidKeys[index].push(`${key}`);
+                }
+              });
+              if (!invalidKeys[index].length) delete invalidKeys[index];
+            });
+
+            let message = '';
+
+            Object.keys(invalidKeys).forEach((index) => {
+              message =
+                message +
+                `Validation failed for transaction ${index} because of invalid properties [${invalidKeys[
+                  index
+                ].join(',')}]. `;
+            });
+
+            d.error = {
+              message: message,
+            };
+            reject(d);
+          } else {
+            console.log('Last bracket');
+            // Get Ledger params
+            const conn = Settings.getBackendParams(
+              getLedgerFromGenesisId(transactionWraps[0].transaction.genesisID),
+              API.Algod
+            );
+            const sendPath = '/v2/transactions/params';
+            const fetchParams: any = {
+              headers: {
+                ...conn.apiKey,
+              },
+              method: 'GET',
+            };
+
+            let url = conn.url;
+            if (conn.port.length > 0) url += ':' + conn.port;
+
+            Task.fetchAPI(`${url}${sendPath}`, fetchParams).then((params) => {
+              transactionWraps.forEach((tx) => {
+                calculateEstimatedFee(tx, params);
+              });
+              d.body.params = transactionWraps;
+              console.log(d.body.params);
+
+              extensionBrowser.windows.create(
+                {
+                  url: extensionBrowser.runtime.getURL('index.html#/sign-v2-transaction'),
+                  ...popupProperties,
+                },
+                function (w) {
+                  if (w) {
+                    Task.requests[d.originTabID] = {
+                      window_id: w.id,
+                      message: d,
+                    };
+                    // Send message with tx info
+                    setTimeout(function () {
+                      extensionBrowser.runtime.sendMessage(d);
+                    }, 500);
+                  }
+                }
+              );
             });
           }
         },
@@ -830,6 +976,127 @@ export class Task {
                 } catch (e) {
                   message.error = e.message;
                 }
+              }
+              // Clean class saved request
+              delete Task.requests[responseOriginTabID];
+              MessageApi.send(message);
+            });
+          } catch {
+            // On error we should remove the task
+            delete Task.requests[responseOriginTabID];
+            return false;
+          }
+          return true;
+        },
+        // sign-v2-allow
+        [JsonRpcMethod.SignV2Allow]: (request: any, sendResponse: Function) => {
+          const { passphrase, responseOriginTabID, accounts } = request.body.params;
+          const auth = Task.requests[responseOriginTabID];
+          const message = auth.message;
+          const transactionWraps = message.body.params;
+          const signedTxs = [];
+          const signErrors = [];
+          console.log('Signing');
+          console.log(message);
+
+          try {
+            const ledger = getLedgerFromGenesisId(transactionWraps[0].transaction.genesisID);
+
+            const context = new encryptionWrap(passphrase);
+            context.unlock(async (unlockedValue: any) => {
+              if ('error' in unlockedValue) {
+                sendResponse(unlockedValue);
+                return false;
+              }
+              extensionBrowser.windows.remove(auth.window_id);
+
+              const recoveredAccounts = [];
+
+              if (unlockedValue[ledger] === undefined) {
+                message.error = RequestErrors.UnsupportedLedger;
+                MessageApi.send(message);
+              }
+              // Find addresses to send algos from
+              for (let i = unlockedValue[ledger].length - 1; i >= 0; i--) {
+                for (let j = accounts.length - 1; j >= 0; j--) {
+                  if (unlockedValue[ledger][i].address === accounts[j].address) {
+                    recoveredAccounts[j] = algosdk.mnemonicToSecretKey(
+                      unlockedValue[ledger][i].mnemonic
+                    );
+                  }
+                }
+              }
+
+              transactionWraps.forEach((wrap, index) => {
+                const txn = removeEmptyFields(wrap.transaction);
+
+                // Modify base64 encoded fields
+                if ('note' in txn && txn.note !== undefined) {
+                  txn.note = new Uint8Array(Buffer.from(txn.note));
+                }
+                // Application transactions only
+                if (txn && txn.type == 'appl') {
+                  if ('appApprovalProgram' in txn) {
+                    try {
+                      txn.appApprovalProgram = Uint8Array.from(
+                        Buffer.from(txn.appApprovalProgram, 'base64')
+                      );
+                    } catch {
+                      signErrors[index] =
+                        'Error trying to parse appApprovalProgram into a Uint8Array value.';
+                    }
+                  }
+                  if ('appClearProgram' in txn) {
+                    try {
+                      txn.appClearProgram = Uint8Array.from(
+                        Buffer.from(txn.appClearProgram, 'base64')
+                      );
+                    } catch {
+                      signErrors[index] =
+                        'Error trying to parse appClearProgram into a Uint8Array value.';
+                    }
+                  }
+                  if ('appArgs' in txn) {
+                    try {
+                      const tempArgs = [];
+                      txn.appArgs.forEach((element) => {
+                        logging.log(element);
+                        tempArgs.push(Uint8Array.from(Buffer.from(element, 'base64')));
+                      });
+                      txn.appArgs = tempArgs;
+                    } catch {
+                      signErrors[index] = 'Error trying to parse appArgs into Uint8Array values.';
+                    }
+                  }
+                }
+
+                try {
+                  // This step transitions a raw object into a transaction style object
+                  const builtTx = buildTransaction(txn);
+                  // We are combining the tx id get and sign into one step/object because of legacy,
+                  // this may not need to be the case any longer.
+                  const signedTxn = {
+                    txID: builtTx.txID().toString(),
+                    blob: builtTx.signTxn(recoveredAccounts[index].sk),
+                  };
+                  const b64Obj = Buffer.from(signedTxn.blob).toString('base64');
+
+                  signedTxs[index] = {
+                    txID: signedTxn.txID,
+                    blob: b64Obj,
+                  };
+                } catch (e) {
+                  signErrors[index] = e.message;
+                }
+              });
+
+              if (signErrors.length) {
+                message.error = 'There were problems signing the transactions.';
+                signErrors.forEach((error, index) => {
+                  message.error += `\nOn transaction ${index}, the error was: ${error}`;
+                });
+              } else {
+                message.response = signedTxs;
               }
               // Clean class saved request
               delete Task.requests[responseOriginTabID];
