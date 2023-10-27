@@ -84,7 +84,7 @@ const Login: FunctionalComponent = (props: any) => {
           />
 
           <p class="mt-5 has-text-centered is-size-7">
-            AlgoSigner does not store your password. If you’ve forgotten your password, you’ll need
+            nullun wallet does not store your password. If you’ve forgotten your password, you’ll need
             to create a new wallet and re-link your accounts.
           </p>
           ${error.length > 0 &&

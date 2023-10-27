@@ -74,8 +74,8 @@ const LedgerHardwareSign: FunctionalComponent = () => {
         }
       });
     } catch (ex) {
-      setError('Error retrieving transaction from AlgoSigner.');
-      logging.log('Error retrieving transaction from AlgoSigner:', LogLevel.Debug);
+      setError('Error retrieving transaction from nullun wallet.');
+      logging.log('Error retrieving transaction from nullun wallet:', LogLevel.Debug);
       logging.log(ex, LogLevel.Debug);
     }
   }, []);
@@ -164,7 +164,7 @@ const LedgerHardwareSign: FunctionalComponent = () => {
               <pre style="white-space: break-spaces;" class="mt-2">
               <code id="txResponseDetail" style="word-break: break-all;">${txResponseDetail}</code>
             </pre>
-              <p class="my-3">You may now close this site and relaunch AlgoSigner.</p>
+              <p class="my-3">You may now close this site and relaunch nullun wallet.</p>
             </div>
           `
         }

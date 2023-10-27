@@ -11,7 +11,7 @@ const FinishAccountCreation: FunctionalComponent = (props: any) => {
       </div>
       <div class="px-4" style="flex: 1;">
         <p data-account-name="${name}">New account '${name}' added for ${ledger}.</p>
-        <p class="my-3">You may now close this site and reopen AlgoSigner.</p>
+        <p class="my-3">You may now close this site and reopen nullun wallet.</p>
       </div>
     </div>
   `;

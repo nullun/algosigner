@@ -24,7 +24,7 @@ const Welcome: FunctionalComponent = (props) => {
 
         <section class="section pt-4">
           <p>
-            AlgoSigner is your new way sign and create transactions on the Algorand network.
+            nullun wallet is your new way sign and create transactions on the Algorand network.
           </p>
           <p class="mt-4">
             It is also a hot wallet for Algorand currency, and can manage assets on the network.

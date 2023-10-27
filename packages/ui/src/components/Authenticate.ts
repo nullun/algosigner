@@ -27,7 +27,7 @@ const Authenticate: FunctionalComponent = (props: any) => {
     <div class="section has-text-white has-text-centered py-0">
       <img src=${logo} width="120" class="mb-6" />
 
-      <p> AlgoSigner needs your password to continue </p>
+      <p> nullun wallet needs your password to continue </p>
       <input
         class="input my-5"
         id="enterPassword"

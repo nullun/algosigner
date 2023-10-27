@@ -120,7 +120,7 @@ const LedgerHardwareConnector: FunctionalComponent = (props: any) => {
       html`
         <div class="px-4" style="flex: 1;">
           <p data-account-name="${name}">New account ${name} added for ${ledger}.</p>
-          <p class="my-3"> You may now close this site and relaunch AlgoSigner.</p>
+          <p class="my-3"> You may now close this site and relaunch nullun wallet.</p>
         </div>
       `}
       ${!isComplete &&

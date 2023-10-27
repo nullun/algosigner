@@ -43,7 +43,7 @@ const NamespacesConfiguration: FunctionalComponent = () => {
       <b class="has-text-centered mb-3 is-size-5">Namespaces Configuration</b>
       <p class="has-text-justified mb-4">
         Namespaces allows you enter short aliases instead of having to fully enter an Algorand
-        Address. E.g., by entering <code>purestake.algo</code>, AlgoSigner resolves to an address
+        Address. E.g., by entering <code>purestake.algo</code>, nullun wallet resolves to an address
         registered to the alias owner. These namespaces can be turned off, doing so will stop
         showing aliases from said namespace when selecting a receiver for a transaction.
       </p>
