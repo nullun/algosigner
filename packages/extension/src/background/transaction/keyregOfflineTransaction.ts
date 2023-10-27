@@ -7,7 +7,7 @@ import { BaseValidatedTxnWrap } from './baseValidatedTxnWrap';
 class OfflineKeyRegistrationTx implements IKeyRegistrationTx {
   type: string = undefined;
   stateProofKey?: string = null;
-  nonParticipation: boolean = undefined;
+  nonParticipation: boolean = false;
   from: string = undefined;
   fee?: number = 0;
   firstRound: number = undefined;
