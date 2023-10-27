@@ -307,7 +307,7 @@ const SignWalletTransaction: FunctionalComponent = () => {
   return html`
     <div
       class="main-view is-flex-direction-column is-justify-content-space-between"
-      style="min-height: 660px;"
+      style="min-height: 640px;"
     >
       <div class="px-5 mt-2" style="flex: 0; border-bottom: 1px solid #EFF4F7">
         <img src=${logotype} width="130" />
