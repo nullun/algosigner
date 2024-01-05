@@ -37,7 +37,7 @@ const NetworkConfiguration: FunctionalComponent = (props: any) => {
           <a
             class="is-size-7"
             target="_blank"
-            href="https://github.com/PureStake/algosigner/blob/develop/docs/add-network.md"
+            href="https://github.com/nullun/algosigner/blob/develop/docs/add-network.md"
             >More info</a
           >
         </div>

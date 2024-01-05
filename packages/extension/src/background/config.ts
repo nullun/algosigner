@@ -5,26 +5,26 @@ import { Backend, API } from './messaging/types';
 import { parseUrlServerAndPort } from './utils/networkUrlParser';
 
 export class Settings {
-  static backend: Backend = Backend.PureStake;
+  static backend: Backend = Backend.AlgoNode;
   static backend_settings: { [key: string]: any } = {
-    [Backend.PureStake]: {
+    [Backend.AlgoNode]: {
       [Network.TestNet]: {
         [API.Algod]: {
-          url: 'https://algosigner.api.purestake.io/testnet/algod',
+		  url: 'https://testnet-api.algonode.cloud',
           port: '',
         },
         [API.Indexer]: {
-          url: 'https://algosigner.api.purestake.io/testnet/indexer',
+		  url: 'https://testnet-idx.algonode.cloud',
           port: '',
         },
       },
       [Network.MainNet]: {
         [API.Algod]: {
-          url: 'https://algosigner.api.purestake.io/mainnet/algod',
+		  url: 'https://mainnet-api.algonode.cloud',
           port: '',
         },
         [API.Indexer]: {
-          url: 'https://algosigner.api.purestake.io/mainnet/indexer',
+		  url: 'https://mainnet-idx.algonode.cloud',
           port: '',
         },
       },

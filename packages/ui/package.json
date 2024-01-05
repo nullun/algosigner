@@ -1,8 +1,8 @@
 {
   "name": "algosigner-ui",
   "version": "1.11.1",
-  "author": "https://developer.purestake.io",
-  "repository": "https://github.com/PureStake/algosigner",
+  "author": "https://nullun.com",
+  "repository": "https://github.com/nullun/algosigner",
   "license": "MIT",
   "description": "User interface built for AlgoSigner.",
   "private": true,

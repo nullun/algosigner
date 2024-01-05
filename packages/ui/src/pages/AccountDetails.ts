@@ -99,7 +99,7 @@ const AccountDetails: FunctionalComponent = (props: any) => {
                   style="cursor: pointer;"
                   class="has-tooltip-arrow has-tooltip-right has-tooltip-fade has-tooltip-primary ml-1"
                   target="_blank"
-                  href=${`https://goalseeker.purestake.io/algorand/${ledgerName}/application/${oia.id}`}
+                  href=${`https://allo.info/application/${oia.id}/`}
                   data-tooltip="View on GoalSeeker"
                   aria-label="view address info on goal seeker"
                 >
@@ -130,7 +130,7 @@ const AccountDetails: FunctionalComponent = (props: any) => {
                   style="cursor: pointer;"
                   class="has-tooltip-arrow has-tooltip-right has-tooltip-fade has-tooltip-primary ml-1"
                   target="_blank"
-                  href=${`https://goalseeker.purestake.io/algorand/${ledgerName}/asset/${cas.index}`}
+                  href=${`https://allo.info/asset/${cas.index}/token/`}
                   data-tooltip="View on GoalSeeker"
                   aria-label="view address info on goal seeker"
                 >
@@ -155,7 +155,7 @@ const AccountDetails: FunctionalComponent = (props: any) => {
                   style="cursor: pointer;"
                   class="has-tooltip-arrow has-tooltip-right has-tooltip-fade has-tooltip-primary ml-1"
                   target="_blank"
-                  href=${`https://goalseeker.purestake.io/algorand/${ledgerName}/application/${cap.id}`}
+                  href=${`https://allo.info/application/${cap.id}/`}
                   data-tooltip="View on GoalSeeker"
                   aria-label="view address info on goal seeker"
                 >

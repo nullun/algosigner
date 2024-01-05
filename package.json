@@ -1,13 +1,13 @@
 {
   "name": "algosigner",
   "version": "1.11.1",
-  "author": "https://developer.purestake.io",
-  "description": "Sign Algorand transactions in your browser with PureStake.",
-  "repository": "https://github.com/PureStake/algosigner",
+  "author": "https://nullun.com",
+  "description": "Sign Algorand transactions in your browser with nullun.",
+  "repository": "https://github.com/nullun/algosigner",
   "license": "MIT",
   "keywords": [
     "Algorand",
-    "PureStake"
+    "nullun"
   ],
   "scripts": {
     "install:extension": "(cd ./packages/common && npm install); (cd ./packages/crypto && npm install); (cd ./packages/storage && npm install); (cd ./packages/ui && npm install); (cd ./packages/extension && npm install); (cd ./packages/dapp && npm install);",

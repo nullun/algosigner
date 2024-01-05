@@ -59,7 +59,7 @@ exports[`TxAxfer should match snapshot 1`] = `
     className="has-text-centered"
   >
     <a
-      href="https://goalseeker.purestake.io/algorand/testnet/transaction/5EYWUOBWEEOM4QRE6JNVP3XHEVFCZ7CFNNI32Q5T2SWWUC7QPGIQ"
+      href="https://allo.info/tx/5EYWUOBWEEOM4QRE6JNVP3XHEVFCZ7CFNNI32Q5T2SWWUC7QPGIQ/"
       rel="noopener noreferrer"
       target="_blank"
     >

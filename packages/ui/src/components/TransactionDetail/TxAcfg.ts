@@ -39,9 +39,7 @@ const TxAcfg: FunctionalComponent = (props: any) => {
       </p>
       <div class="has-text-centered">
         <a
-          href=${`https://goalseeker.purestake.io/algorand/${ledger.toLowerCase()}/transaction/${
-            tx.id
-          }`}
+          href=${`https://allo.info/tx/${tx.id}/`}
           target="_blank"
           rel="noopener noreferrer"
         >

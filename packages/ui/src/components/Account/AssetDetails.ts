@@ -76,9 +76,7 @@ const AssetDetails: FunctionalComponent = (props: any) => {
         </p>
         <div class="has-text-centered is-flex is-flex-direction-column mt-3">
           <a
-            href=${`https://goalseeker.purestake.io/algorand/${ledger.toLowerCase()}/asset/${
-              asset['asset-id']
-            }`}
+			href=${`https://allo.info/asset/${asset['asset-id']}/token/`}
             target="_blank"
             rel="noopener noreferrer"
           >

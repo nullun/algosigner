@@ -5,7 +5,7 @@ import { NetworkTemplate } from '@algosigner/common/types/network';
 /* eslint-disable no-unused-vars */
 
 export enum Backend {
-  PureStake = 'PureStake',
+  AlgoNode = 'AlgoNode',
   Algod = 'Algod',
 }
 

@@ -14,9 +14,7 @@ const TxAfrz: FunctionalComponent = (props: any) => {
     assetIndex = html`
       <a
         style="width: 70%"
-        href=${`https://goalseeker.purestake.io/algorand/${network.toLowerCase()}/asset/${
-          tx.assetIndex
-        }`}
+        href=${`https://allo.info/asset/${tx.assetIndex}/token/`}
         target="_blank"
         rel="noopener noreferrer"
       >

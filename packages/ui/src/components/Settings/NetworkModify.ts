@@ -174,7 +174,7 @@ const NetworkModify: FunctionalComponent = (props: any) => {
             >Network Headers
             <a
               target="_blank"
-              href="https://github.com/PureStake/algosigner/blob/develop/docs/add-network.md#network-headers"
+              href="https://github.com/nullun/algosigner/blob/develop/docs/add-network.md#network-headers"
             >
               <i
                 class="fas fa-info-circle ml-1 has-tooltip-arrow has-tooltip-text-left has-tooltip-fade"

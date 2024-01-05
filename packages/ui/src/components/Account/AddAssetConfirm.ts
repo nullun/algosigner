@@ -84,9 +84,7 @@ const AddAssetConfirm: FunctionalComponent = (props: any) => {
 
         <div class="has-text-centered mt-3">
           <a
-            href=${`https://goalseeker.purestake.io/algorand/${ledger.toLowerCase()}/asset/${
-              asset['asset_id']
-            }`}
+			href=${`https://allo.info/asset/${asset['asset-id']}/token/`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -114,7 +112,7 @@ const AddAssetConfirm: FunctionalComponent = (props: any) => {
         <b>Transaction sent!</b>
         <div class="mt-3">
           <a
-            href=${`https://goalseeker.purestake.io/algorand/${ledger.toLowerCase()}/transaction/${txId}`}
+			href=${`https://allo.info/tx/${txId}/`}
             target="_blank"
             rel="noopener noreferrer"
           >
